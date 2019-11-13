@@ -50,7 +50,7 @@ class spriteCanvasClass{
 		this.canvas.style.backgroundColor = 'rgb(136, 68, 68)';
 	}
 
-
+// foobar
 	loadImage = (file)=>{
 		console.log('loadImage', file);
 		let fileReader = new FileReader();
@@ -80,7 +80,7 @@ class spriteCanvasClass{
 		let source_image_aspect = this.sourceImage.width / this.sourceImage.height;
 
 		if(source_image_aspect > canvas_aspect){ // fit to WIDTH
-			console.log('fit to width'); 
+			console.log('fit to width');
 		}else{ // fit to HEIGHT
 			console.log('fit to height');
 		}
