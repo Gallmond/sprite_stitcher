@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<title>Sprite Stitcher</title>
+</head>
+<body>
+	<div id="wrapper" class="">
+		<div id="left" class="">
+			<div id="input_canvas_area">
+				<canvas id="input_canvas">
+			</div>
+			<div id="controls_area">
+				
+				<input type="file" name="select_file" id="select_image_button">
+
+
+				<div>
+					<h4>Colour distance algorithm</h4>
+					<input type="radio" id="colour_dist_alg_0" name="colour_dist_alg" value="0">
+					<label for="colour_dist_alg_0">Euclidean</label><br>
+					<input disabled type="radio" id="colour_dist_alg_1" name="colour_dist_alg" value="1">
+					<label for="colour_dist_alg_1">CIE76</label><br>
+					<input disabled type="radio" id="colour_dist_alg_2" name="colour_dist_alg" value="2">
+					<label for="colour_dist_alg_2">CIE94</label><br>
+					<input disabled type="radio" id="colour_dist_alg_3" name="colour_dist_alg" value="3">
+					<label for="colour_dist_alg_3">CIEDE2000</label><br>
+					<input disabled type="radio" id="colour_dist_alg_4" name="colour_dist_alg" value="4">
+					<label for="colour_dist_alg_4">CMC l:c (1984)</label>
+				</div>
+
+				<button id="generate_list_button">Generate list</button>
+				
+
+			</div>
+		</div>
+		<div id="right" class="">
+			<div id="colour_list_area">
+				colour_list
+			</div>
+		</div>
+	</div>
+<script src="js/spriteCanvas.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
