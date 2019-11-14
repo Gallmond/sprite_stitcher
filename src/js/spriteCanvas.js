@@ -1,9 +1,22 @@
+// some utilities
+
+const RGB2Hex = (rgb_arr)=>{
+    let R = rgb_arr[0].toString(16);
+    let G = rgb_arr[1].toString(16);
+    let B = rgb_arr[2].toString(16);
+    R = (R.length!=2 ? "0" : "") + String(R);
+    G = (G.length!=2 ? "0" : "") + String(G);
+    B = (B.length!=2 ? "0" : "") + String(B);
+    return `${R}${G}${B}`;
+}
+
 class sourceImageClass{
 	imageData;
 	src;
 	width;
 	height;
 	image;
+	depth;
 	constructor(){}
 	load = (src_url)=>{
 		return new Promise((resolve,reject)=>{
@@ -18,11 +31,39 @@ class sourceImageClass{
 				this.width = e.target.width;
 				this.height = e.target.height;
 				this.imageData = temp_canvas.getContext('2d').getImageData(0, 0, e.target.width, e.target.height);
+				this.depth = this.imageData.data.length / (this.width * this.height);
 				return resolve(this);
 			}
 			this.image.src = src_url;
 		});
 	}
+	/**
+	 * return object of couted colours
+	 *
+	 * @memberof sourceImageClass
+	 */
+	countColours = ()=>{
+		if(!this.imageData) return false;
+		let data = this.imageData.data;
+		// count pixels
+		let counted_pixels = {};
+		for(let i=0, l=data.length; i<l; i+= this.depth){
+			let pixel = data.slice(i, i+this.depth);
+			if(pixel[3]!=255) continue; // skip transparent
+			let hex = RGB2Hex(pixel);
+			if(!counted_pixels[ hex ]){
+				counted_pixels[ hex ] = {
+					'indexes' : [ i ],
+					'count' : 1
+				}
+			}else{
+				counted_pixels[ hex ].indexes.push( i );
+				counted_pixels[ hex ].count++;
+			}
+		}
+		return counted_pixels;
+	}
+
 }
 
 
@@ -31,6 +72,11 @@ class spriteCanvasClass{
 	canvas;
 	ctx;
 	sourceImage;
+	resizedBitmap;
+	offset_x;
+	offset_y;
+	depth = 4; // always 4 channels for RGBA
+	highlight_colour = [0,255,0,255]// RGBA
 
 	constructor(canvas_id){
 		this.canvas = document.getElementById(canvas_id);
@@ -45,7 +91,7 @@ class spriteCanvasClass{
 			this.canvas.height = this.canvas.parentNode.offsetHeight;
 		}
 		setCanvasSize();
-		window.addEventListener('resize', setCanvasSize)
+		// window.addEventListener('resize', setCanvasSize)
 		this.canvas.style.backgroundColor = 'rgb(136, 68, 68)';
 	}
 
@@ -59,9 +105,10 @@ class spriteCanvasClass{
 			console.log('fileReader.onload', e);
 			this.sourceImage = new sourceImageClass();
 			this.sourceImage.load( e.target.result ).then((resolved, rejected)=>{
-				if(rejected) console.log('rejected', rejected);
-				console.log('resolved', resolved);
-				this.ctx.drawImage( resolved.image, 0, 0 );
+				if(rejected){
+					console.log('rejected', rejected);
+					throw new Error('the source image failed to load');
+				} 
 				this.renderImage();
 			});
 		}
@@ -69,18 +116,14 @@ class spriteCanvasClass{
 
 	}
 
-
 	renderImage = ()=>{
 		console.log('renderImage');
 
 		// take the source image pixels, and resize pixels to fit in the canvas
 		let canvas_aspect = this.canvas.width / this.canvas.height;
 		let source_image_aspect = this.sourceImage.width / this.sourceImage.height;
-		let depth = 4;
 
-		console.log('this.sourceImage.imageData', this.sourceImage.imageData);
-
-
+		// check which way will fill the canvas first and expand to this size pixel only
 		if(source_image_aspect > canvas_aspect){ // fit to WIDTH
 			console.log('fit to width');
 			var new_pixel_size = Math.floor( this.canvas.width / this.sourceImage.width );
@@ -89,48 +132,71 @@ class spriteCanvasClass{
 			var new_pixel_size = Math.floor( this.canvas.height / this.sourceImage.height );
 		}
 
-		console.log('new_pixel_size', new_pixel_size);
-
+		// new full image width from this
 		let new_width = this.sourceImage.width * new_pixel_size;
 		let new_height = this.sourceImage.height * new_pixel_size;
 
 		// expand width
         let new_arr = [];
-        for (let i = 0; i < this.sourceImage.imageData.data.length; i += depth) {
-            let pixel = this.sourceImage.imageData.data.slice(i, i + depth); // [R,G,B,A]
+        for (let i = 0; i < this.sourceImage.imageData.data.length; i += this.depth) {
+            let pixel = this.sourceImage.imageData.data.slice(i, i + this.depth); // [R,G,B,A]
             for (let ii = 0; ii < new_pixel_size; ii++) {
                 new_arr.push(...pixel);
             }
 		}
-		console.log('new_arr', new_arr);
-		
 
         // expand height
         let new_arr_two = [];
-        for (let i = 0; i < new_arr.length; i += new_width * depth) {
-            let this_line = new_arr.slice(i, i + (new_width * depth));
+        for (let i = 0; i < new_arr.length; i += new_width * this.depth) {
+            let this_line = new_arr.slice(i, i + (new_width * this.depth));
             for (let ii = 0; ii < new_pixel_size; ii++) {
                 new_arr_two.push(...this_line);
             }
 		}
 
-		console.log('new_arr_two', new_arr_two);
-		
 		// create new image
 		let new_uint8 = new Uint8ClampedArray(new_arr_two);
-		console.log(new_uint8, new_width, new_height);
 		let new_ImageData = new ImageData(new_uint8, new_width, new_height);
 		createImageBitmap(new_ImageData).then((res, rej) => {
-            if (rej) console.log(rej);
-            if (res) console.log(res);
-			// put new in display canvas
-			let x = (this.canvas.width - res.width) / 2
-			let y = (this.canvas.height - res.height) / 2
-
-            this.ctx.drawImage(res, x, y);
+            if (rej) throw new Error('the image bitmap could not be created');
+			this.resizedBitmap = res;
+			this.offset_x = (this.canvas.width - this.resizedBitmap.width) / 2
+			this.offset_y = (this.canvas.height - this.resizedBitmap.height) / 2
+			this.ctx.drawImage(this.resizedBitmap, this.offset_x, this.offset_y);
+			this.countColours();
         });
 
 
 	}
+
+	// TODO set interface properly
+	countColours = ()=>{
+		// get colours of image
+		let counted_colours = this.sourceImage.countColours();
+		console.log('counted_colours', counted_colours);
+	}
+
+
+	higlightColour = (hex)=>{
+		hex = hex.toLowerCase();
+		// get current data and create new image
+		let display_data = this.ctx.getImageData(this.offset_x, this.offset_y, this.resizedBitmap.width, this.resizedBitmap.height);
+		let new_uint8 = new Uint8ClampedArray(display_data.data);
+		let new_ImageData = new ImageData(new_uint8, display_data.width, display_data.height);
+		for(let i=0, l=new_ImageData.data.length; i<l; i+= this.depth ){
+			let pixel = new_ImageData.data.slice(i, i+this.depth);
+			let this_hex = RGB2Hex( pixel );
+			if(this_hex == hex){ // swap matching pixels to the highlight colour
+				new_ImageData.data.set(this.highlight_colour, i);
+			}
+		}
+		// draw to canvas
+		createImageBitmap(new_ImageData).then((res, rej)=>{
+			this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+			this.ctx.drawImage(res, this.offset_x, this.offset_y);
+		});
+	}
+
+	
 
 }
