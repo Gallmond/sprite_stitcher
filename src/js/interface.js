@@ -5,6 +5,7 @@ class interfaceClass{
 		'generate_list_button' : false,
 		'select_image_button' : false,
 		'colour_output' : false,
+		'brand_select' : false,
 	}
 
 	spriteCanvas;
@@ -45,9 +46,24 @@ class interfaceClass{
 
 		// generate list button
 		this.elements.generate_list_button.addEventListener('click', (e)=>{
-			
+			let colours = this.spriteCanvas.countColours();
+			if(colours) this.createTableFromColours(colours);
+
+
+
 		});
 
 	}
+
+
+	createTableFromColours = (colours)=>{
+
+		// get nearby brand colours
+
+
+	}
+
+
+
 
 }

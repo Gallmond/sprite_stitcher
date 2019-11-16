@@ -1,5 +1,13 @@
 // some utilities
 
+const colour_distance_types = {
+	0: 'Euclidean',
+	1: 'CIE76',
+	2: 'CIE94',
+	3: 'CIEDE2000',
+	4: 'CMC l:c (1984)'
+};
+
 const RGB2Hex = (rgb_arr)=>{
     let R = rgb_arr[0].toString(16);
     let G = rgb_arr[1].toString(16);
@@ -9,6 +17,20 @@ const RGB2Hex = (rgb_arr)=>{
     B = (B.length!=2 ? "0" : "") + String(B);
     return `${R}${G}${B}`;
 }
+
+
+const colourDistance = (rgb_arr_1, rgb_arr_2, method=0)=>{
+	if(method===0){ // Euclidean
+		return Math.sqrt(
+			((rgb_arr_2[0] - rgb_arr_1[0]) * (rgb_arr_2[0] - rgb_arr_1[0])) +
+			((rgb_arr_2[1] - rgb_arr_1[1]) * (rgb_arr_2[1] - rgb_arr_1[1])) + 
+			((rgb_arr_2[2] - rgb_arr_1[2]) * (rgb_arr_2[2] - rgb_arr_1[2]))
+		)
+	}
+
+	return false;
+}
+
 
 class sourceImageClass{
 	imageData;
@@ -63,7 +85,6 @@ class sourceImageClass{
 		}
 		return counted_pixels;
 	}
-
 }
 
 
@@ -163,21 +184,22 @@ class spriteCanvasClass{
 			this.offset_x = (this.canvas.width - this.resizedBitmap.width) / 2
 			this.offset_y = (this.canvas.height - this.resizedBitmap.height) / 2
 			this.ctx.drawImage(this.resizedBitmap, this.offset_x, this.offset_y);
-			this.countColours();
         });
 
 
 	}
 
-	// TODO set interface properly
+
 	countColours = ()=>{
 		// get colours of image
 		let counted_colours = this.sourceImage.countColours();
 		console.log('counted_colours', counted_colours);
+		return counted_colours;
 	}
 
 
-	higlightColour = (hex)=>{
+	// TODO make changes to this
+	highlight_colour = (hex)=>{
 		hex = hex.toLowerCase();
 		// get current data and create new image
 		let display_data = this.ctx.getImageData(this.offset_x, this.offset_y, this.resizedBitmap.width, this.resizedBitmap.height);
