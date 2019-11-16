@@ -78,8 +78,8 @@ class spriteCanvasClass{
 	depth = 4; // always 4 channels for RGBA
 	highlight_colour = [0,255,0,255]// RGBA
 
-	constructor(canvas_id){
-		this.canvas = document.getElementById(canvas_id);
+	constructor(canvas_element){
+		this.canvas = canvas_element;
 		this.ctx = this.canvas.getContext('2d');
 		this.init();
 	}
