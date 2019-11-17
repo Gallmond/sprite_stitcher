@@ -1,10 +1,10 @@
 class floss{
 
-	static brands = {
+	brands = {
 		'dmc' : DMC_FLOSS
 	}
 
-	static colour_distance_types = {
+	colour_distance_types = {
 		0: 'Euclidean',
 		1: 'CIE76',
 		2: 'CIE94',
@@ -12,7 +12,7 @@ class floss{
 		4: 'CMC l:c (1984)'
 	};
 
-	static similar = (hex, brand=false)=>{
+	static similar(hex, brand=false){
 
 		let similar = [];
 		if(brand!=false){
@@ -31,7 +31,7 @@ class floss{
 
 	}
 
-	static colourDistance = (rgb_arr_1, rgb_arr_2, method=0)=>{
+	static colourDistance(rgb_arr_1, rgb_arr_2, method=0){
 		if(method===0){ // Euclidean
 			return Math.sqrt(
 				((rgb_arr_2[0] - rgb_arr_1[0]) * (rgb_arr_2[0] - rgb_arr_1[0])) +

@@ -1,92 +1,3 @@
-// some utilities
-
-const colour_distance_types = {
-	0: 'Euclidean',
-	1: 'CIE76',
-	2: 'CIE94',
-	3: 'CIEDE2000',
-	4: 'CMC l:c (1984)'
-};
-
-const RGB2Hex = (rgb_arr)=>{
-    let R = rgb_arr[0].toString(16);
-    let G = rgb_arr[1].toString(16);
-    let B = rgb_arr[2].toString(16);
-    R = (R.length!=2 ? "0" : "") + String(R);
-    G = (G.length!=2 ? "0" : "") + String(G);
-    B = (B.length!=2 ? "0" : "") + String(B);
-    return `${R}${G}${B}`;
-}
-
-
-const colourDistance = (rgb_arr_1, rgb_arr_2, method=0)=>{
-	if(method===0){ // Euclidean
-		return Math.sqrt(
-			((rgb_arr_2[0] - rgb_arr_1[0]) * (rgb_arr_2[0] - rgb_arr_1[0])) +
-			((rgb_arr_2[1] - rgb_arr_1[1]) * (rgb_arr_2[1] - rgb_arr_1[1])) + 
-			((rgb_arr_2[2] - rgb_arr_1[2]) * (rgb_arr_2[2] - rgb_arr_1[2]))
-		)
-	}
-	return false;
-}
-
-
-class sourceImageClass{
-	imageData;
-	src;
-	width;
-	height;
-	image;
-	depth;
-	constructor(){}
-	load = (src_url)=>{
-		return new Promise((resolve,reject)=>{
-			this.src = src_url;
-			this.image = new Image();
-			this.image.onerror = (e)=>{
-				return reject(e);
-			}
-			this.image.onload = (e)=>{
-				let temp_canvas = document.createElement('canvas')
-				temp_canvas.getContext('2d').drawImage(e.target, 0, 0);
-				this.width = e.target.width;
-				this.height = e.target.height;
-				this.imageData = temp_canvas.getContext('2d').getImageData(0, 0, e.target.width, e.target.height);
-				this.depth = this.imageData.data.length / (this.width * this.height);
-				return resolve(this);
-			}
-			this.image.src = src_url;
-		});
-	}
-	/**
-	 * return object of couted colours
-	 *
-	 * @memberof sourceImageClass
-	 */
-	countColours = ()=>{
-		if(!this.imageData) return false;
-		let data = this.imageData.data;
-		// count pixels
-		let counted_pixels = {};
-		for(let i=0, l=data.length; i<l; i+= this.depth){
-			let pixel = data.slice(i, i+this.depth);
-			if(pixel[3]!=255) continue; // skip transparent
-			let hex = RGB2Hex(pixel);
-			if(!counted_pixels[ hex ]){
-				counted_pixels[ hex ] = {
-					'indexes' : [ i ],
-					'count' : 1
-				}
-			}else{
-				counted_pixels[ hex ].indexes.push( i );
-				counted_pixels[ hex ].count++;
-			}
-		}
-		return counted_pixels;
-	}
-}
-
-
 class spriteCanvasClass{
 
 	canvas;
@@ -206,7 +117,7 @@ class spriteCanvasClass{
 		let new_ImageData = new ImageData(new_uint8, display_data.width, display_data.height);
 		for(let i=0, l=new_ImageData.data.length; i<l; i+= this.depth ){
 			let pixel = new_ImageData.data.slice(i, i+this.depth);
-			let this_hex = RGB2Hex( pixel );
+			let this_hex = helpers.RGB2Hex( pixel );
 			if(this_hex == hex){ // swap matching pixels to the highlight colour
 				new_ImageData.data.set(this.highlight_colour, i);
 			}
