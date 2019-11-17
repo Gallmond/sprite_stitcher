@@ -5,7 +5,7 @@ class appClass{
 		'generate_list_button' : false,
 		'select_image_button' : false,
 		'colour_output' : false,
-		'brand_select' : false,
+		'distance_calculator' : false,
 		'colour_distance' : false,
 	}
 
@@ -57,6 +57,10 @@ class appClass{
 
 	}
 
+	getSelectedColourDistanceMethod = ()=>{
+		return parseInt(this.elements.distance_calculator.querySelector('[name="colour_dist_alg"]:checked').value);
+	}
+
 
 	createTableFromColours = (colours)=>{
 		console.log('colours', colours);
@@ -79,7 +83,7 @@ class appClass{
 		// get nearby brand colours	
 		for(let i=0, l=sorted.length; i<l; i++){
 			let thiscol = sorted[i];
-			sorted[i]['similar'] = floss.similar( thiscol.hex, this.elements.colour_distance.value ); 
+			sorted[i]['similar'] = floss.similar( thiscol.hex, this.elements.colour_distance.value, this.getSelectedColourDistanceMethod() ); 
 		}
 
 		// create HTML

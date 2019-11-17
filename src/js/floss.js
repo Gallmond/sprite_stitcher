@@ -1,6 +1,9 @@
 class floss{
 
+
 	static similar(hex, max_distance, method=0, brand=false,){
+		console.log(`similar(${hex}, ${max_distance}, ${method}, ${brand})`);
+
 		let similar = [];
 		let brands_to_check = {};
 		if(brand!=false){
@@ -19,7 +22,7 @@ class floss{
 				let input_rgb = helpers.Hex2RGB( hex );
 
 				// get colour distance
-				let this_distance = floss.colourDistance( input_rgb, floss_rgb, method );
+				let this_distance = parseFloat( helpers.colourDistance( input_rgb, floss_rgb, method ) );
 
 				// add to list if below max
 				if(this_distance <= max_distance){
@@ -43,29 +46,9 @@ class floss{
 
 	}
 
-	static colourDistance(rgb_arr_1, rgb_arr_2, method=0){
-		if(method===0){ // Euclidean
-			return Math.sqrt(
-				((rgb_arr_2[0] - rgb_arr_1[0]) * (rgb_arr_2[0] - rgb_arr_1[0])) +
-				((rgb_arr_2[1] - rgb_arr_1[1]) * (rgb_arr_2[1] - rgb_arr_1[1])) + 
-				((rgb_arr_2[2] - rgb_arr_1[2]) * (rgb_arr_2[2] - rgb_arr_1[2]))
-			)
-		}
-		return false;
-	}
-
-
 }
 
 // static properties must be defined like this
-floss.colour_distance_types = {
-	0: 'Euclidean',
-	1: 'CIE76',
-	2: 'CIE94',
-	3: 'CIEDE2000',
-	4: 'CMC l:c (1984)'
-};
-
 floss.brands = {
 	'dmc' : {
 		'f0c5c1': {'r':240, 'g':197, 'b':193, 'id':'3713', 'name':false},

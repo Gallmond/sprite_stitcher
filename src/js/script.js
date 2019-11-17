@@ -6,7 +6,7 @@
 		'generate_list_button' : 'generate_list_button',
 		'select_image_button' : 'select_image_button',
 		'colour_output' : 'colour_list_area',
-		'brand_select' : 'brand_select',
+		'distance_calculator' : 'distance_calculator',
 		'colour_distance' : 'colour_distance',
 	});
 
