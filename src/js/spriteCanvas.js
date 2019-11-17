@@ -27,7 +27,6 @@ const colourDistance = (rgb_arr_1, rgb_arr_2, method=0)=>{
 			((rgb_arr_2[2] - rgb_arr_1[2]) * (rgb_arr_2[2] - rgb_arr_1[2]))
 		)
 	}
-
 	return false;
 }
 

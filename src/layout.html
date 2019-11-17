@@ -32,6 +32,13 @@
 					<label for="colour_dist_alg_4">CMC l:c (1984)</label>
 				</div>
 
+				<div>
+					<span>Distance: <span id="current_distance"></span></span><br>
+					<input id="colour_distance" type="range" min="1" max="50" value="30" step="1" onchange="document.getElementById('current_distance').innerHTML = document.getElementById('colour_distance').value">
+					
+				</div>
+
+
 				<button id="generate_list_button">Generate list</button>
 				
 

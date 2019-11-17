@@ -6,6 +6,7 @@ class interfaceClass{
 		'select_image_button' : false,
 		'colour_output' : false,
 		'brand_select' : false,
+		'colour_distance' : false,
 	}
 
 	spriteCanvas;
@@ -48,18 +49,46 @@ class interfaceClass{
 		this.elements.generate_list_button.addEventListener('click', (e)=>{
 			let colours = this.spriteCanvas.countColours();
 			if(colours) this.createTableFromColours(colours);
-
-
-
 		});
 
 	}
 
 
 	createTableFromColours = (colours)=>{
+		console.log('colours', colours);
 
-		// get nearby brand colours
+		// put into array sorted by count
+		let sorted = [];
+		for(let hex in colours){
+			colours[ hex ]['hex'] = hex;
+			sorted.push(colours[ hex ]);
+		}
+		sorted.sort((a,b)=>{
+            if(a.count > b.count) return -1;
+            if(a.count < b.count) return +1;
+            if(a.count == b.count) return 0;
+		});
+		console.log('sorted', sorted);
 
+		// get nearby brand colours	
+		for(let i=0, l=sorted.length; i<l; i++){
+			let thiscol = sorted[i];
+
+			sorted[i]['similar'] = 
+
+		}
+
+		// create HTML
+		let ul = document.createElement('ul');
+
+		sorted.forEach(details => {
+			let li = document.createElement('li');
+			li.innerText = `hex[${details.hex}] count[${details.count}]`;
+			ul.appendChild(li);
+		});
+
+		// add to table
+		this.elements['colour_output'].appendChild(ul);
 
 	}
 
