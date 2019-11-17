@@ -37,17 +37,22 @@ body {
 	height: 500px;
 
 }
-#input_canvas{
 
-}
 #controls_area{
 	flex: 1;
-
 }
-
 
 #right{
 	flex:1;
-
 }
 
+.colour_square{
+	width: 25px;
+	height: 25px;
+	display: inline-block;
+	border: 1px solid black;
+}
+.list_item{
+	list-style-type: none;
+	font-family: "Lucida Console", Monaco, monospace;
+}

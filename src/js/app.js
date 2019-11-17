@@ -75,21 +75,46 @@ class appClass{
 			sorted[i]['similar'] = floss.similar( thiscol.hex, this.elements.colour_distance.value ); 
 		}
 
-		console.log('sorted', sorted);
-
-
 		// create HTML
 		let ul = document.createElement('ul');
 
 		sorted.forEach(details => {
+			let to_append = [];
+
+			// details for the pixel in the image
 			let li = document.createElement('li');
-			li.innerText = `hex[${details.hex}] count[${details.count}]`;
-			ul.appendChild(li);
+			li.className = "list_item";
+			// <li class="list_item"><span class="colour_square" style="background-color:#ffe0a3"></span>#ffe0a3 used 73 pixels</li>
+			let info = `<span class="colour_square" style="background-color:#${details.hex}"></span>#${details.hex} used ${details.count} pixels`;
+			li.innerHTML = info;
+			to_append.push(li);
+
+			// loop through floss similar to this colour
+			if(details.similar.count != 0 ){
+				let ul_container = document.createElement('li');
+				ul_container.className = "list_item";
+				let ul = document.createElement('ul');
+				ul_container.appendChild(ul);
+				for (let i = 0; i < details.similar.length; i++) {
+					let this_similar = details.similar[i];
+					let li = document.createElement('li');
+					li.className = "list_item";
+					// <li class="list_item"><span class="colour_square" style="background-color:#ffe19a"></span>#ffe19a dmc [745] distance(9.06)</li>
+					let info = `<span class="colour_square" style="background-color:#${this_similar.hex}"></span>#${this_similar.hex} ${this_similar.brand} [${this_similar.id}]${(this_similar.name ? ' '+this_similar.name : '')} distance(${(this_similar.distance).toFixed(2)})`;
+					li.innerHTML = info;
+					ul.appendChild(li);
+				}
+				to_append.push(ul_container);
+			}
+
+			// collect all the list items
+			for (let i = 0; i < to_append.length; i++) {
+				ul.appendChild(to_append[i]);
+			}
 		});
 
-		// add to table
+		// add to page
 		this.elements['colour_output'].appendChild(ul);
-
 	}
 
 
