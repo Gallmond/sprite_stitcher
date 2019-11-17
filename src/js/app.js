@@ -1,4 +1,4 @@
-class interfaceClass{
+class appClass{
 
 	elements = {
 		'input_canvas' : false,
@@ -74,7 +74,7 @@ class interfaceClass{
 		for(let i=0, l=sorted.length; i<l; i++){
 			let thiscol = sorted[i];
 
-			sorted[i]['similar'] = 
+			// sorted[i]['similar'] = 
 
 		}
 
