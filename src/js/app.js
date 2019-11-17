@@ -68,15 +68,15 @@ class appClass{
             if(a.count < b.count) return +1;
             if(a.count == b.count) return 0;
 		});
-		console.log('sorted', sorted);
 
 		// get nearby brand colours	
 		for(let i=0, l=sorted.length; i<l; i++){
 			let thiscol = sorted[i];
-
-			// sorted[i]['similar'] = 
-
+			sorted[i]['similar'] = floss.similar( thiscol.hex, this.elements.colour_distance.value ); 
 		}
+
+		console.log('sorted', sorted);
+
 
 		// create HTML
 		let ul = document.createElement('ul');

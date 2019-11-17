@@ -18,6 +18,17 @@ class helpers{
 		return `${R}${G}${B}`;
 	}
 
+	static Hex2RGB(hex_str){
+		let A = hex_str.split('');
+		let R = A.splice(0,2).join('');
+		let R_int = parseInt(R, 16);
+		let G = A.splice(0,2).join('');
+		let G_int = parseInt(G, 16);
+		let B = A.splice(0,2).join('');
+		let B_int = parseInt(B, 16);
+		return [R_int, G_int, B_int];
+	}
+
 	static colourDistance(rgb_arr_1, rgb_arr_2, method=0){
 		if(method===0){ // Euclidean
 			return Math.sqrt(
