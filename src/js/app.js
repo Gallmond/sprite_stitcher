@@ -47,6 +47,10 @@ class appClass{
 
 		// generate list button
 		this.elements.generate_list_button.addEventListener('click', (e)=>{
+			if(!this.spriteCanvas.sourceImage){
+				alert('no image selected');
+				return false;
+			}
 			let colours = this.spriteCanvas.countColours();
 			if(colours) this.createTableFromColours(colours);
 		});
@@ -56,6 +60,9 @@ class appClass{
 
 	createTableFromColours = (colours)=>{
 		console.log('colours', colours);
+
+		// clear output
+		this.elements['colour_output'].innerHTML = "";
 
 		// put into array sorted by count
 		let sorted = [];
@@ -85,7 +92,7 @@ class appClass{
 			let li = document.createElement('li');
 			li.className = "list_item";
 			// <li class="list_item"><span class="colour_square" style="background-color:#ffe0a3"></span>#ffe0a3 used 73 pixels</li>
-			let info = `<span class="colour_square" style="background-color:#${details.hex}"></span>#${details.hex} used ${details.count} pixels`;
+			let info = `<span class="colour_square" style="background-color:#${details.hex}"></span>#${details.hex} ${details.count} pixels`;
 			li.innerHTML = info;
 			to_append.push(li);
 

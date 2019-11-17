@@ -44,6 +44,7 @@ body {
 
 #right{
 	flex:1;
+	overflow-y:scroll;
 }
 
 .colour_square{
