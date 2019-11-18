@@ -108,7 +108,7 @@ class spriteCanvasClass{
 	}
 
 
-	// TODO make changes to this
+	// TODO redo this, think about how to overlay and replace pixels on button presses
 	highlight_colour = (hex)=>{
 		hex = hex.toLowerCase();
 		// get current data and create new image

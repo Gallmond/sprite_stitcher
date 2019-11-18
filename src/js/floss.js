@@ -26,11 +26,15 @@ class floss{
 
 				// add to list if below max
 				if(this_distance <= max_distance){
+					let new_object = {};
 					let this_floss = brands_to_check[brandName][floss_hex];
-					this_floss['hex'] = floss_hex;
-					this_floss['distance'] = this_distance;
-					this_floss['brand'] = brandName;
-					similar.push( this_floss );
+					for(let propertyName in this_floss){
+						new_object[ propertyName ] = this_floss[ propertyName ];
+					}
+					new_object['hex'] = floss_hex;
+					new_object['distance'] = this_distance;
+					new_object['brand'] = brandName;
+					similar.push( new_object );
 				}
 			}
 		}
@@ -45,6 +49,8 @@ class floss{
 		return similar;
 
 	}
+
+
 
 }
 

@@ -17,25 +17,11 @@
 				
 				<input type="file" name="select_file" id="select_image_button">
 
-
-				<div id="distance_calculator">
-					<h4>Colour distance algorithm</h4>
-					<input type="radio" id="colour_dist_alg_0" name="colour_dist_alg" value="0" checked>
-					<label for="colour_dist_alg_0">Euclidean</label><br>
-					<input disabled type="radio" id="colour_dist_alg_1" name="colour_dist_alg" value="1">
-					<label for="colour_dist_alg_1">CIE76</label><br>
-					<input type="radio" id="colour_dist_alg_2" name="colour_dist_alg" value="2">
-					<label for="colour_dist_alg_2">CIE94</label><br>
-					<input disabled type="radio" id="colour_dist_alg_3" name="colour_dist_alg" value="3">
-					<label for="colour_dist_alg_3">CIEDE2000</label><br>
-					<input disabled type="radio" id="colour_dist_alg_4" name="colour_dist_alg" value="4">
-					<label for="colour_dist_alg_4">CMC l:c (1984)</label>
-				</div>
+				<div id="distance_calculator"></div>
 
 				<div>
 					<span>Distance: <span id="current_distance">30</span></span><br>
 					<input id="colour_distance" type="range" min="1" max="50" value="30" step="1" oninput="document.getElementById('current_distance').innerHTML = document.getElementById('colour_distance').value">
-					
 				</div>
 
 
