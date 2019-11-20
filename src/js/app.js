@@ -2,11 +2,16 @@ class appClass{
 
 	elements = {
 		'input_canvas' : false,
-		'generate_list_button' : false,
-		'select_image_button' : false,
 		'colour_output' : false,
-		'distance_calculator' : false,
-		'colour_distance' : false,
+		'controls_area' : false,
+		
+		// 'generate_list_button' : false,
+		// 'select_image_button' : false,
+		
+		// 'distance_calculator' : false,
+		// 'colour_distance' : false,
+
+		
 	}
 
 	spriteCanvas;
@@ -22,15 +27,6 @@ class appClass{
 			}
 		}
 
-		// TODO change dist calc to CREATE the inputs, do not rely on layout
-		// check element types
-		if( this.elements.input_canvas.tagName != 'CANVAS' ) throw new Error('input_canvas must be a canvas element');
-		if( this.elements.generate_list_button.tagName != 'BUTTON' ) throw new Error('generate_list_button must be a button element');
-		if( this.elements.select_image_button.tagName != 'INPUT' ) throw new Error('select_image_button must be a input element');
-		if( this.elements.colour_output.tagName != 'DIV' ) throw new Error('colour_output must be a div element');
-		if( this.elements.distance_calculator.tagName != 'DIV' ) throw new Error('distance_calculator must be a div element');
-		if( this.elements.colour_distance.tagName != 'INPUT' ) throw new Error('colour_distance must be a input element');
-	
 		// create ui elements
 		this.createElements();
 
@@ -42,28 +38,32 @@ class appClass{
 
 	}
 
-	// TODO create entire input area
+
 	createElements = (e)=>{
 
-		// distance_calculator
-		let checked_index = 0; // which one to pre-check?
-		let disabled_index = [1,3,4]; // which ones to disable?
+		let to_add = [];
 
-		let h4 = document.createElement('h4');
-		h4.innerText = 'Colour distance algorithm';
+		// === file select <input type="file" name="select_file" id="select_image_button">
+		let file_select = document.createElement('input')
+		file_select.id = "select_image_button";
+		file_select.name = "select_file";
+		file_select.type = "file";
+		to_add.push( file_select );
 
-		this.elements.distance_calculator.appendChild(h4);
-
+		// === distance_calculator
+		let CHECKED = 2;
+		let DISABLED = [1,3,4]
+		let distance_calculator_container = document.createElement('div');
 		for(let i in helpers.colour_distance_types){
 			let id = `colour_dist_alg_${i}`;
 
-			let input = document.createElement('input');
-			input.id = id;
-			input.name = "colour_dist_alg";
-			input.type = "radio";
-			input.value = i;
-			if(i == checked_index) input.checked = true;
-			if(disabled_index.indexOf(parseInt(i))!=-1) input.disabled = true;
+			let distance_calculator_radio = document.createElement('input');
+			distance_calculator_radio.id = id;
+			distance_calculator_radio.name = "colour_dist_alg";
+			distance_calculator_radio.type = "radio";
+			distance_calculator_radio.value = i;
+			if(i === CHECKED) distance_calculator_radio.checked = true;
+			if(DISABLED.indexOf( parseInt(i) ) != -1) distance_calculator_radio.disabled = true;
 
 			let label = document.createElement('label');
 			label.innerText = helpers.colour_distance_types[i];
@@ -71,10 +71,48 @@ class appClass{
 
 			let br = document.createElement('br');
 
-			this.elements.distance_calculator.appendChild(input);
-			this.elements.distance_calculator.appendChild(label);
-			this.elements.distance_calculator.appendChild(br);
+			distance_calculator_container.appendChild(distance_calculator_radio);
+			distance_calculator_container.appendChild(label);
+			distance_calculator_container.appendChild(br);
 		}
+		to_add.push( distance_calculator_container );
+
+		// === current distance slider
+		let slider_container = document.createElement('div');
+		let span = document.createElement('span');
+		span.innerHTML = '<span>Distance: <span id="current_distance">30</span></span><br>';
+		let colour_distance_input = document.createElement('input'); 
+		colour_distance_input.id = "colour_distance" ;
+		colour_distance_input.type = "range" ;
+		colour_distance_input.min = "1" ;
+		colour_distance_input.max = "50" ;
+		colour_distance_input.value = "30" ;
+		colour_distance_input.step = "1" ;
+		colour_distance_input.addEventListener('input', (e)=>{
+			document.getElementById('current_distance').innerText = e.target.value;
+		});
+		slider_container.appendChild(span);
+		slider_container.appendChild(colour_distance_input);
+		to_add.push( slider_container );
+
+		// === generate list button
+		let generate_list_button = document.createElement('button');
+		generate_list_button.id = 'generate_list_button';
+		generate_list_button.innerText = "Generate list";
+		to_add.push( generate_list_button );
+
+		// set ref
+		this.elements.generate_list_button = generate_list_button;
+		this.elements.select_image_button = file_select;
+		this.elements.distance_calculator = distance_calculator_container;
+		this.elements.colour_distance = colour_distance_input;
+
+		// ==== add to page
+		to_add.forEach((item)=>{
+			this.elements.controls_area.appendChild( item );
+		})
+
+
 	}
 
 
