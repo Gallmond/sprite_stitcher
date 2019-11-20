@@ -146,6 +146,7 @@ class appClass{
 	}
 
 
+
 	createTableFromColours = (colours)=>{
 
 		// clear output
@@ -195,6 +196,7 @@ class appClass{
 					let sub_li = document.createElement('li');
 					sub_li.className = "list_item";
 					// <li class="list_item"><span class="colour_square" style="background-color:#ffe19a"></span>#ffe19a dmc [745] distance(9.06)</li>
+					// TODO add listeners for these as buttons. put the orig and the new hex in the data
 					let info = `<span class="colour_square" style="background-color:#${this_similar.hex}"></span>#${this_similar.hex} ${this_similar.brand} [${this_similar.id}]${(this_similar.name ? ' '+this_similar.name : '')} distance(${this_similar.distance.toFixed(2)})`;
 					sub_li.innerHTML = info;
 					sub_ul.appendChild(sub_li);

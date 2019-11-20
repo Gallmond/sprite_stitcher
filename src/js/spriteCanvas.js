@@ -100,6 +100,7 @@ class spriteCanvasClass{
 		});
 	}
 
+
 	renderImage = ()=>{
 		console.log('renderImage');
 
@@ -122,7 +123,11 @@ class spriteCanvasClass{
 	}
 
 
-	/// TODO how to higlight
+	// TODO how to highlight
+	// use indexes in colour count to replace on new empty image
+	// resize and paste onto canvas
+	// clicking again clears
+	// reset button to set to original
 
 	
 
