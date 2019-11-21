@@ -62,7 +62,7 @@ class appClass{
 			distance_calculator_radio.name = "colour_dist_alg";
 			distance_calculator_radio.type = "radio";
 			distance_calculator_radio.value = i;
-			if(i === CHECKED) distance_calculator_radio.checked = true;
+			if(i == CHECKED) distance_calculator_radio.checked = true;
 			if(DISABLED.indexOf( parseInt(i) ) != -1) distance_calculator_radio.disabled = true;
 
 			let label = document.createElement('label');
@@ -146,6 +146,20 @@ class appClass{
 	}
 
 
+	highlight = (colour_square)=>{
+		let active = colour_square.dataset.active;
+		let replaces = colour_square.dataset.replaces;
+		let hex = colour_square.dataset.hex;
+		this.spriteCanvas.highlight(replaces, hex).then((resolved, rejected)=>{
+			if(rejected){
+				console.log('rejected', rejected);
+				colour_square.dataset.active = false;
+			}else{
+				colour_square.dataset.active = true;
+			}
+		});
+	}
+
 
 	createTableFromColours = (colours)=>{
 
@@ -197,8 +211,24 @@ class appClass{
 					sub_li.className = "list_item";
 					// <li class="list_item"><span class="colour_square" style="background-color:#ffe19a"></span>#ffe19a dmc [745] distance(9.06)</li>
 					// TODO add listeners for these as buttons. put the orig and the new hex in the data
-					let info = `<span class="colour_square" style="background-color:#${this_similar.hex}"></span>#${this_similar.hex} ${this_similar.brand} [${this_similar.id}]${(this_similar.name ? ' '+this_similar.name : '')} distance(${this_similar.distance.toFixed(2)})`;
-					sub_li.innerHTML = info;
+					let colour_square = document.createElement('span');
+					colour_square.dataset.replaces = item.hex;
+					colour_square.dataset.hex = this_similar.hex;
+					colour_square.dataset.active = false;
+					colour_square.className = "colour_square";
+					colour_square.style.backgroundColor = `#${this_similar.hex}`;
+					colour_square.addEventListener('click', (e)=>{
+						this.highlight(e.target);						
+					});
+
+					let info = document.createElement('span');
+					info.innerText = `#${this_similar.hex} ${this_similar.brand} [${this_similar.id}]${(this_similar.name ? ' '+this_similar.name : '')} distance(${this_similar.distance.toFixed(2)})`;
+					
+					// let info = `<span data-replaces="${item.hex}" data-hex="${this_similar.hex}" class="colour_square" style="background-color:#${this_similar.hex}"></span>#${this_similar.hex} ${this_similar.brand} [${this_similar.id}]${(this_similar.name ? ' '+this_similar.name : '')} distance(${this_similar.distance.toFixed(2)})`;
+					// sub_li.innerHTML = info;
+					sub_li.appendChild(colour_square);
+					sub_li.appendChild(info);
+
 					sub_ul.appendChild(sub_li);
 				}
 				to_append.push(ul_container);

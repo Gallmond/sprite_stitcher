@@ -12,6 +12,7 @@ class spriteCanvasClass{
 	constructor(canvas_element){
 		this.canvas = canvas_element;
 		this.ctx = this.canvas.getContext('2d');
+		this.ctx.imageSmoothingEnabled = false;
 		this.init();
 	}
 
@@ -69,6 +70,7 @@ class spriteCanvasClass{
 			let new_height = sourceImageData.height * new_pixel_size;
 
 			// expand width
+			console.log('sourceImageData.data', sourceImageData.data);
 			let new_arr = [];
 			for (let i = 0; i < sourceImageData.data.length; i += this.depth) {
 				let pixel = sourceImageData.data.slice(i, i + this.depth); // [R,G,B,A]
@@ -89,11 +91,14 @@ class spriteCanvasClass{
 			// create new image
 			let new_uint8 = new Uint8ClampedArray(new_arr_two);
 			let new_ImageData = new ImageData(new_uint8, new_width, new_height);
+			console.log('new_ImageData', new_ImageData);
+
 			createImageBitmap(new_ImageData).then((res, rej) => {
 				if (rej) throw new Error('the image bitmap could not be created');
 				if(rej){
 					return reject(rej);
 				}
+				console.log('res', res);
 				return resolve( res );
 			});
 
@@ -109,7 +114,7 @@ class spriteCanvasClass{
 			this.resizedBitmap = resizedBitmap;
 			this.offset_x = (this.canvas.width - this.resizedBitmap.width) / 2
 			this.offset_y = (this.canvas.height - this.resizedBitmap.height) / 2
-			this.ctx.drawImage(this.resizedBitmap, this.offset_x, this.offset_y);
+			this.ctx.drawImage(this.resizedBitmap, Math.round(this.offset_x), Math.round(this.offset_y));
 		});
 
 	}
@@ -122,12 +127,52 @@ class spriteCanvasClass{
 		return counted_colours;
 	}
 
+	highlight = (replaces, hex)=>{
+		return new Promise((resolve,reject)=>{
+		
+			console.log(`spriteCanvas.highlight(${replaces}, ${hex})`);
 
-	// TODO how to highlight
-	// use indexes in colour count to replace on new empty image
-	// resize and paste onto canvas
-	// clicking again clears
-	// reset button to set to original
+			// get orig pixels indexes
+			let collected = this.sourceImage.counted_pixels;
+			if(! collected[ replaces ] ){
+				throw new Error(`Can't find ${replaces} in original colours.`);
+			}
+			let indexes = collected[ replaces ].indexes;
+
+			// get orig imagedata
+			let imageData = this.sourceImage.imageData;
+
+			// create new imagedata of same length
+			let overlay_pixels = new Uint8ClampedArray( imageData.data.length );
+			overlay_pixels.fill(0);
+
+			// fill pixels at indexes with new pixel
+			let RGB = helpers.Hex2RGB( hex );
+			let RGBA = [...RGB, 255];
+			for(let i=0, l=indexes.length; i<l; i++){
+				let pixel_i = indexes[i];
+				overlay_pixels.set(RGBA, pixel_i);
+			}
+
+			// resize for canvas
+			let overlay_ImageData = new ImageData(overlay_pixels, this.sourceImage.imageData.width, this.sourceImage.imageData.height);
+			this.resizeImageForCanvas( overlay_ImageData ).then((resizedBitmap, rejected)=>{
+				if(rejected){
+					throw new Error('problem resizing image')
+				}
+				// paste onto canvas
+				this.offset_x = (this.canvas.width - this.resizedBitmap.width) / 2;
+				this.offset_y = (this.canvas.height - this.resizedBitmap.height) / 2;
+				this.canvas.getContext('2d').drawImage(resizedBitmap, Math.round(this.offset_x), Math.round(this.offset_y));
+			});
+
+			// TODO add way to reset to original
+			// TODO add way to clear this one highlight
+
+		});
+	}
+
+	
 
 	
 

@@ -5,6 +5,7 @@ class sourceImageClass{
 	height;
 	image;
 	depth;
+	counted_pixels;
 	constructor(){}
 	load = (src_url)=>{
 		return new Promise((resolve,reject)=>{
@@ -34,21 +35,21 @@ class sourceImageClass{
 		if(!this.imageData) return false;
 		let data = this.imageData.data;
 		// count pixels
-		let counted_pixels = {};
+		this.counted_pixels = {};
 		for(let i=0, l=data.length; i<l; i+= this.depth){
 			let pixel = data.slice(i, i+this.depth);
 			if(pixel[3]!=255) continue; // skip transparent
 			let hex = helpers.RGB2Hex(pixel);
-			if(!counted_pixels[ hex ]){
-				counted_pixels[ hex ] = {
+			if(!this.counted_pixels[ hex ]){
+				this.counted_pixels[ hex ] = {
 					'indexes' : [ i ],
 					'count' : 1
 				}
 			}else{
-				counted_pixels[ hex ].indexes.push( i );
-				counted_pixels[ hex ].count++;
+				this.counted_pixels[ hex ].indexes.push( i );
+				this.counted_pixels[ hex ].count++;
 			}
 		}
-		return counted_pixels;
+		return this.counted_pixels;
 	}
 }
