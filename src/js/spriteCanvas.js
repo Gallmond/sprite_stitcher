@@ -28,17 +28,15 @@ class spriteCanvasClass{
 	}
 
 	loadImage = (file)=>{
-		console.log('loadImage', file);
 		let fileReader = new FileReader();
 		fileReader.onerror = (e)=>{
 			throw e;
 		}
 		fileReader.onload = (e)=>{
-			console.log('fileReader.onload', e);
 			this.sourceImage = new sourceImageClass();
 			this.sourceImage.load( e.target.result ).then((resolved, rejected)=>{
 				if(rejected){
-					console.log('rejected', rejected);
+					console.log('this.sourceImage.load rejected', rejected);
 					throw new Error('the source image failed to load');
 				} 
 				this.renderImage();
@@ -58,10 +56,8 @@ class spriteCanvasClass{
 
 			// check which way will fill the canvas first and expand to this size pixel only
 			if(source_image_aspect > canvas_aspect){ // fit to WIDTH
-				console.log('fit to width');
 				var new_pixel_size = Math.floor( this.canvas.width / sourceImageData.width );
 			}else{ // fit to HEIGHT
-				console.log('fit to height');
 				var new_pixel_size = Math.floor( this.canvas.height / sourceImageData.height );
 			}
 
@@ -70,7 +66,6 @@ class spriteCanvasClass{
 			let new_height = sourceImageData.height * new_pixel_size;
 
 			// expand width
-			console.log('sourceImageData.data', sourceImageData.data);
 			let new_arr = [];
 			for (let i = 0; i < sourceImageData.data.length; i += this.depth) {
 				let pixel = sourceImageData.data.slice(i, i + this.depth); // [R,G,B,A]
@@ -91,14 +86,13 @@ class spriteCanvasClass{
 			// create new image
 			let new_uint8 = new Uint8ClampedArray(new_arr_two);
 			let new_ImageData = new ImageData(new_uint8, new_width, new_height);
-			console.log('new_ImageData', new_ImageData);
 
 			createImageBitmap(new_ImageData).then((res, rej) => {
 				if (rej) throw new Error('the image bitmap could not be created');
 				if(rej){
+					console.log('resizeImageForCanvas createImageBitmape rejected', rej);
 					return reject(rej);
 				}
-				console.log('res', res);
 				return resolve( res );
 			});
 
@@ -107,8 +101,6 @@ class spriteCanvasClass{
 
 
 	renderImage = ()=>{
-		console.log('renderImage');
-
 		this.resizeImageForCanvas( this.sourceImage.imageData ).then((resizedBitmap, rejected)=>{
 			if(rejected){ throw new Error('problem resizing image') }
 			this.resizedBitmap = resizedBitmap;
@@ -123,13 +115,11 @@ class spriteCanvasClass{
 	countColours = ()=>{
 		// get colours of image
 		let counted_colours = this.sourceImage.countColours();
-		console.log('counted_colours', counted_colours);
 		return counted_colours;
 	}
 
 	highlight = (replaces, hex)=>{
 		return new Promise((resolve,reject)=>{
-		
 			console.log(`spriteCanvas.highlight(${replaces}, ${hex})`);
 
 			// get orig pixels indexes
@@ -164,6 +154,7 @@ class spriteCanvasClass{
 				this.offset_x = (this.canvas.width - this.resizedBitmap.width) / 2;
 				this.offset_y = (this.canvas.height - this.resizedBitmap.height) / 2;
 				this.canvas.getContext('2d').drawImage(resizedBitmap, Math.round(this.offset_x), Math.round(this.offset_y));
+				return resolve(true);
 			});
 
 			// TODO add way to reset to original

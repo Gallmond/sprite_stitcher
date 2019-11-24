@@ -122,7 +122,6 @@ class appClass{
 		this.elements.select_image_button.addEventListener('change',(e)=>{
 			let files = e.target.files;
 			if(files.length != 1){
-				console.log('select a file');
 				return;
 			}else{
 				this.spriteCanvas.loadImage(files[0]);
@@ -145,17 +144,37 @@ class appClass{
 		return parseInt(this.elements.distance_calculator.querySelector('[name="colour_dist_alg"]:checked').value);
 	}
 
-
+	// TODO how to unhighlight other active ones?
 	highlight = (colour_square)=>{
-		let active = colour_square.dataset.active;
+		let active = (colour_square.dataset.active === 'true');
 		let replaces = colour_square.dataset.replaces;
 		let hex = colour_square.dataset.hex;
+		
+		if(active){ // already active, so set the replace to the original colour (ie, turning it off)
+			hex = replaces;
+		}else{ // not yet active, turn off all other active ones
+			let other_active = document.querySelectorAll(`.colour_replace[data-active="true"][data-replaces="${replaces}"]`);
+			for(let i=0, l=other_active.length; i<l; i++){
+				let thisElement = other_active[i];	
+				if(thisElement == colour_square) continue;
+				thisElement.dataset.active = false;
+				thisElement.classList.remove('active_highlight');
+			}
+
+		}
+
 		this.spriteCanvas.highlight(replaces, hex).then((resolved, rejected)=>{
 			if(rejected){
-				console.log('rejected', rejected);
-				colour_square.dataset.active = false;
+				console.log('this.spriteCanvas.highlight rejected', rejected);
 			}else{
-				colour_square.dataset.active = true;
+				if(active){
+					colour_square.dataset.active = String(!active);
+					colour_square.classList.remove('active_highlight');
+				}else{
+					colour_square.dataset.active = String(!active);
+					colour_square.classList.add('active_highlight');
+				}
+				
 			}
 		});
 	}
@@ -209,13 +228,12 @@ class appClass{
 					let this_similar = item.similar[i];
 					let sub_li = document.createElement('li');
 					sub_li.className = "list_item";
-					// <li class="list_item"><span class="colour_square" style="background-color:#ffe19a"></span>#ffe19a dmc [745] distance(9.06)</li>
-					// TODO add listeners for these as buttons. put the orig and the new hex in the data
 					let colour_square = document.createElement('span');
 					colour_square.dataset.replaces = item.hex;
 					colour_square.dataset.hex = this_similar.hex;
 					colour_square.dataset.active = false;
-					colour_square.className = "colour_square";
+					colour_square.classList.add("colour_square");
+					colour_square.classList.add("colour_replace");
 					colour_square.style.backgroundColor = `#${this_similar.hex}`;
 					colour_square.addEventListener('click', (e)=>{
 						this.highlight(e.target);						

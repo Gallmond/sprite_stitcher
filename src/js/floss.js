@@ -2,7 +2,7 @@ class floss {
 
 
 	static similar(hex, max_distance, method = 0, brand = false, ) {
-		console.log(`similar(${hex}, ${max_distance}, ${method}, ${brand})`);
+		// console.log(`similar(${hex}, ${max_distance}, ${method}, ${brand})`);
 
 		let similar = [];
 		let brands_to_check = {};
