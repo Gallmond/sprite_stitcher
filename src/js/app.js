@@ -144,7 +144,6 @@ class appClass{
 		return parseInt(this.elements.distance_calculator.querySelector('[name="colour_dist_alg"]:checked').value);
 	}
 
-	// TODO how to unhighlight other active ones?
 	highlight = (colour_square)=>{
 		let active = (colour_square.dataset.active === 'true');
 		let replaces = colour_square.dataset.replaces;

@@ -157,9 +157,6 @@ class spriteCanvasClass{
 				return resolve(true);
 			});
 
-			// TODO add way to reset to original
-			// TODO add way to clear this one highlight
-
 		});
 	}
 
