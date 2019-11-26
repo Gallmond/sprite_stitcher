@@ -98,8 +98,24 @@ class appClass{
 		// === generate list button
 		let generate_list_button = document.createElement('button');
 		generate_list_button.id = 'generate_list_button';
-		generate_list_button.innerText = "Generate list";
+		generate_list_button.innerText = "Get colours";
 		to_add.push( generate_list_button );
+
+		// === show text list
+		let copy_list_button = document.createElement('button');
+		copy_list_button.innerText = 'Make list';
+		copy_list_button.addEventListener('click', (e)=>{
+			this.copyList();
+		});
+		to_add.push(copy_list_button);
+
+		// === highlight closest
+		let highlight_closest_button = document.createElement('button');
+		highlight_closest_button.innerText = 'Highlight nearest';
+		highlight_closest_button.addEventListener('click', (e)=>{
+			this.highlightClosest();
+		});
+		to_add.push(highlight_closest_button);
 
 		// set ref
 		this.elements.generate_list_button = generate_list_button;
@@ -144,6 +160,12 @@ class appClass{
 		return parseInt(this.elements.distance_calculator.querySelector('[name="colour_dist_alg"]:checked').value);
 	}
 
+	highlightClosest = ()=>{
+
+		//TODO finish this
+
+	}
+
 	highlight = (colour_square)=>{
 		let active = (colour_square.dataset.active === 'true');
 		let replaces = colour_square.dataset.replaces;
@@ -178,6 +200,53 @@ class appClass{
 		});
 	}
 
+	copyList = ()=>{
+
+		if(!this.spriteCanvas.sourceImage){
+			alert('no image selected');
+			return false;
+		}
+
+		// get all active colour squares
+		let colour_squares = document.querySelectorAll('span.colour_square[data-active="true"]');
+		let rows = [];
+		for(let i=0, l=colour_squares.length; i<l; i++){
+			let thisElement = colour_squares[i];
+			let colour_id = thisElement.dataset.id;
+			let colour_hex = thisElement.dataset.hex;
+			let colour_brand = thisElement.dataset.brand;
+			let colour_name = thisElement.dataset.name;
+			let colour_count = thisElement.dataset.count;
+
+			console.log('colour_id', colour_id);
+			console.log('colour_hex', colour_hex);
+			console.log('colour_brand', colour_brand);
+			console.log('colour_name', colour_name);
+			console.log('colour_count', colour_count);
+
+			colour_name = (colour_name=='false' ? '' : colour_name);
+
+			rows.push(`${colour_count} stitches of ${colour_brand} (${colour_id}) ${colour_name}`);
+		}
+
+		let rows_string = rows.join('\r\n');
+		let text = document.createElement('textarea');
+		text.value = rows_string;
+		document.body.appendChild(text);
+		text.select();
+		text.setSelectionRange(0, rows_string.length); /*For mobile devices*/
+		let methodExists = document.execCommand("copy");
+		text.remove();
+		if(methodExists){
+			alert("Copied to clipboard:\r\n" + rows_string);	
+		}else{
+			alert('Browser does not support execCommand("copy")');
+		}
+		
+
+
+	};
+
 
 	createTableFromColours = (colours)=>{
 
@@ -209,7 +278,7 @@ class appClass{
 
 			// item for the pixel in the image
 			let li = document.createElement('li');
-			li.className = "list_item";
+			li.classList.add( "list_item" );
 			// <li class="list_item"><span class="colour_square" style="background-color:#ffe0a3"></span>#ffe0a3 used 73 pixels</li>
 			let info = `<span class="colour_square" style="background-color:#${item.hex}"></span>#${item.hex} ${item.count} pixels`;
 			li.innerHTML = info;
@@ -231,8 +300,17 @@ class appClass{
 					colour_square.dataset.replaces = item.hex;
 					colour_square.dataset.hex = this_similar.hex;
 					colour_square.dataset.active = false;
+
+					colour_square.dataset.brand = this_similar.brand;
+					colour_square.dataset.name = this_similar.name;
+					colour_square.dataset.id = this_similar.id;
+					colour_square.dataset.count = item.count;
+
 					colour_square.classList.add("colour_square");
 					colour_square.classList.add("colour_replace");
+					if(i === 0){
+						colour_square.classList.add("first_colour");
+					}
 					colour_square.style.backgroundColor = `#${this_similar.hex}`;
 					colour_square.addEventListener('click', (e)=>{
 						this.highlight(e.target);						
