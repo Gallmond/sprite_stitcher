@@ -160,10 +160,32 @@ class appClass{
 		return parseInt(this.elements.distance_calculator.querySelector('[name="colour_dist_alg"]:checked').value);
 	}
 
+	/**
+	 * Sets the active colour for each sublist to the first one.
+	 *
+	 * @memberof appClass
+	 */
 	highlightClosest = ()=>{
+		console.log('highlightClosest');
 
-		//TODO finish this
+		// get every sublist
+		let sublists_containers = document.querySelectorAll('.sublist_container');
 
+		sublists_containers.forEach((elem)=>{
+			// get first sublist item's colour square and click it
+			let this_sublist_item = elem.querySelector('.sublist_item > .colour_square');
+
+			// if it already has active_highlight, skip it
+			let isActive = false;
+			let this_classlist = this_sublist_item.classList;
+			for(let propName in this_classlist){
+				if( this_classlist[propName] === 'active_highlight'){
+					isActive = true;
+				}
+			}
+
+			if(!isActive) this_sublist_item.click();
+		});
 	}
 
 	highlight = (colour_square)=>{
@@ -287,7 +309,7 @@ class appClass{
 			// loop through floss similar to this colour
 			if(item.similar.length != 0 ){
 				let ul_container = document.createElement('li');
-				ul_container.className = "list_item";
+				ul_container.className = "list_item sublist_container";
 				let sub_ul = document.createElement('ul');
 				ul_container.appendChild(sub_ul);
 				// for (let i = 0; i < item.similar.length; i++) {
@@ -295,7 +317,7 @@ class appClass{
 
 					let this_similar = item.similar[i];
 					let sub_li = document.createElement('li');
-					sub_li.className = "list_item";
+					sub_li.className = "list_item sublist_item";
 					let colour_square = document.createElement('span');
 					colour_square.dataset.replaces = item.hex;
 					colour_square.dataset.hex = this_similar.hex;
