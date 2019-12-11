@@ -173,22 +173,35 @@ class appClass{
 
 		sublists_containers.forEach((elem)=>{
 			// get first sublist item's colour square and click it
-			let this_sublist_item = elem.querySelector('.sublist_item > .colour_square');
-
-			// if it already has active_highlight, skip it
-			let isActive = false;
-			let this_classlist = this_sublist_item.classList;
-			for(let propName in this_classlist){
-				if( this_classlist[propName] === 'active_highlight'){
-					isActive = true;
+			let this_sublist_items = elem.querySelectorAll('.sublist_item > .colour_square');
+			for(let i=0, l=this_sublist_items.length; i<l; i++){
+				let this_sublist_item = this_sublist_items[i];
+				if(this_sublist_item.dataset.allow_highlight === 'true'){
+					// if it already has active_highlight, skip it
+					let isActive = false;
+					let this_classlist = this_sublist_item.classList;
+					for(let propName in this_classlist){
+						if( this_classlist[propName] === 'active_highlight'){
+							isActive = true;
+						}
+					}
+					if(!isActive){
+						this_sublist_item.click();
+						break;
+					} 
 				}
 			}
-
-			if(!isActive) this_sublist_item.click();
+			
 		});
 	}
 
 	highlight = (colour_square)=>{
+
+		console.log('colour_square.dataset.allow_highlight', colour_square.dataset.allow_highlight);
+		if(colour_square.dataset.allow_highlight === 'false'){
+			return;
+		}
+
 		let active = (colour_square.dataset.active === 'true');
 		let replaces = colour_square.dataset.replaces;
 		let hex = colour_square.dataset.hex;
@@ -293,7 +306,26 @@ class appClass{
 		}
 
 		// create HTML
+
+		// filters
+		let filter_container = document.createElement('div');
+		for(let brand in floss.brands){
+			let button = document.createElement('button');
+			button.innerText = `show/hide ${brand}`;
+			button.addEventListener('click', (e)=>{
+				let elems = document.getElementById('colour_list_container').querySelectorAll(`[data-brand="${brand}"]`);
+				elems.forEach((elem)=>{
+					let parent = elem.parentNode;
+					let new_display = (parent.style.display != 'none' ? 'none' : '');
+					parent.style.display = new_display;
+					elem.dataset.allow_highlight = (new_display === 'none' ? 'false' : 'true');
+				});
+			});
+			filter_container.appendChild(button);
+		}
+
 		let ul = document.createElement('ul');
+		ul.id = 'colour_list_container';
 
 		sorted.forEach(item => {
 			let to_append = [];
@@ -327,6 +359,7 @@ class appClass{
 					colour_square.dataset.name = this_similar.name;
 					colour_square.dataset.id = this_similar.id;
 					colour_square.dataset.count = item.count;
+					colour_square.dataset.allow_highlight = 'true';
 
 					colour_square.classList.add("colour_square");
 					colour_square.classList.add("colour_replace");
@@ -359,6 +392,7 @@ class appClass{
 		});
 
 		// add to page
+		this.elements['colour_output'].appendChild(filter_container);
 		this.elements['colour_output'].appendChild(ul);
 	}
 
