@@ -39,7 +39,48 @@ class appClass{
 	}
 
 
-	createElements = (e)=>{
+	createAddThreadDropdown = ()=>{
+
+		// === create data
+		let dropdownData = {};
+
+		for(let brand_name in floss.brands){
+			for(let hex in floss.brands[ brand_name ]){
+				let thisFloss = floss.brands[brand_name][hex];
+
+				/*
+				'dmc': {
+					'f0c5c1': { 'r': 240, 'g': 197, 'b': 193, 'id': '3713', 'name': false },
+					...
+				*/
+
+				 // "anchor salmon pink (123) #123abc"
+				let color_block = `<span style="background-color: rgb(${thisFloss.r},${thisFloss.g},${thisFloss.b});width: 25px; height: 25px; display: inline-block; border: 2px solid black; "></span>`;
+
+				let props = {
+					'_label' : `${color_block}${brand_name + ' '}${thisFloss.name ? thisFloss.name + ' ' : ''}(${thisFloss.id}) <span style="font-family:monospace">#${hex}</span>`
+				}
+
+				for(let thisFlossProp in thisFloss){
+					props[ thisFlossProp ] = thisFloss[thisFlossProp];
+				}
+
+				dropdownData[ thisFloss.id ] = props;
+			}
+		}
+
+		// === create element
+		let element = document.createElement('div');
+		element.id = 'searchable_dropdown';
+
+		let dropdown = new SearchableDropDown(element, dropdownData, (elem)=>{console.log('FOOOBAR')});
+		return element;
+
+	}
+
+	createElements = ()=>{
+
+		//TODO add proper flexbox CSS for this, so thread DD doesn't explode page
 
 		let to_add = [];
 
@@ -116,6 +157,10 @@ class appClass{
 			this.highlightClosest();
 		});
 		to_add.push(highlight_closest_button);
+
+		// === add thread interactive dropdown
+		let dropdown_div = this.createAddThreadDropdown();
+		to_add.push(dropdown_div);
 
 		// set ref
 		this.elements.generate_list_button = generate_list_button;
