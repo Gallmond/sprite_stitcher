@@ -1,7 +1,7 @@
 class floss {
 
 
-	static similar(hex, max_distance, method = 0, brand = false, ) {
+	static similar(hex, max_distance, method = 0, brand = false, additional = false ) {
 		// console.log(`similar(${hex}, ${max_distance}, ${method}, ${brand})`);
 
 		let similar = [];
@@ -13,6 +13,36 @@ class floss {
 			brands_to_check[brand] = floss.brands[brand];
 		} else {
 			brands_to_check = floss.brands;
+		}
+
+		if(additional != false){
+			// insert additional floss. format like
+			// {
+			// 	'coolbrand':{
+			// 		'f0c5c1': { 'r': 240, 'g': 197, 'b': 193, 'id': '3713', 'name': false },
+			// 		'e6adab': { 'r': 230, 'g': 173, 'b': 171, 'id': '761', 'name': false }
+			// 	},
+			// 	'anotherbrand':{
+			// 		'f0c5c1': { 'r': 240, 'g': 197, 'b': 193, 'id': '3713', 'name': false },
+			// 		'e6adab': { 'r': 230, 'g': 173, 'b': 171, 'id': '761', 'name': false }
+			// 	}
+			// }
+
+			for(let additional_brand_name in additional){
+				// check format of first element
+				let first_hex = Object.keys(additional[ additional_brand_name ])[0];
+				if(!(
+					additional[ additional_brand_name ][ first_hex ].hasOwnProperty('r') && 
+					additional[ additional_brand_name ][ first_hex ].hasOwnProperty('g') && 
+					additional[ additional_brand_name ][ first_hex ].hasOwnProperty('b') && 
+					additional[ additional_brand_name ][ first_hex ].hasOwnProperty('id')
+				)){
+					continue; // skip this brand entirely
+				}else{
+					brands_to_check[ additional_brand_name ] = additional[ additional_brand_name ];
+				}
+			}
+
 		}
 
 		for (let brandName in brands_to_check) { // for each brand of floss
