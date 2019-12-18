@@ -4,6 +4,7 @@ class SearchableDropDown{
 	content;
 	button;
 	callback;
+	items = [];
 
 	data;
 
@@ -31,6 +32,17 @@ class SearchableDropDown{
 		return key_val_data;
 	}
 
+	getactive(){
+
+		for(let i=0, l=this.items.length; i<l; i++){
+			let this_div = this.items[i];	
+
+			if(this_div.dataset.active === 'true'){
+				console.log('this_div.dataset', this_div.dataset);
+			}
+		}
+
+	}
 
 	toggleactive(elem){
 		elem.dataset.active = elem.dataset.active === 'true' ? 'false' : 'true';
@@ -54,15 +66,14 @@ class SearchableDropDown{
 
 		this.content = document.createElement('div');
 		this.content.style.display = 'none'
-		this.content.style.position = 'absolute'
 
 		let input = document.createElement('input');
 		input.type = 'text';
 		input.addEventListener('keyup',(e)=>{
-			let divs = this.content.querySelectorAll('div');
+			let divs = this.content.querySelectorAll('div[data-search]');
 			divs.forEach((elem)=>{
 				if(elem.dataset.search.indexOf( e.target.value ) != -1){
-					elem.style.display = 'block';
+					elem.style.display = '';
 				}else{
 					if(elem.dataset.active != 'true'){
 						elem.style.display = 'none';
@@ -72,6 +83,9 @@ class SearchableDropDown{
 		});
 
 		this.content.appendChild(input);
+		let list_container = document.createElement('div');
+		list_container.id = 'dd_items_container';
+		// list_container.style.minHeight = '0px';
 		for(let property in this.data){
 			let div = document.createElement('div');
 			div.dataset.search = property;
@@ -92,13 +106,14 @@ class SearchableDropDown{
 				div.innerText = property;
 			}
 			
-			this.content.appendChild(div);
+			this.items.push(div);
+			list_container.appendChild(div);
 		}
+
+		this.content.appendChild( list_container );
 
 		this.containing_div.appendChild(this.button);
 		this.containing_div.appendChild(this.content);
-
-
 	}
 
 }

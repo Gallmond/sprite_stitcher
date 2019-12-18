@@ -58,7 +58,8 @@ class appClass{
 				let color_block = `<span style="background-color: rgb(${thisFloss.r},${thisFloss.g},${thisFloss.b});width: 25px; height: 25px; display: inline-block; border: 2px solid black; "></span>`;
 
 				let props = {
-					'_label' : `${color_block}${brand_name + ' '}${thisFloss.name ? thisFloss.name + ' ' : ''}(${thisFloss.id}) <span style="font-family:monospace">#${hex}</span>`
+					'_label' : `${color_block}${brand_name + ' '}${thisFloss.name ? thisFloss.name + ' ' : ''}(${thisFloss.id}) <span style="font-family:monospace">#${hex}</span>`,
+					'brand': brand_name
 				}
 
 				for(let thisFlossProp in thisFloss){
@@ -73,23 +74,28 @@ class appClass{
 		let element = document.createElement('div');
 		element.id = 'searchable_dropdown';
 
-		let dropdown = new SearchableDropDown(element, dropdownData, (elem)=>{console.log('FOOOBAR')});
+		this.searchable_dropdown = new SearchableDropDown(element, dropdownData, (elem)=>{console.log('FOOOBAR')});
 		return element;
 
 	}
 
 	createElements = ()=>{
 
-		//TODO add proper flexbox CSS for this, so thread DD doesn't explode page
+		let to_add_left = [];
+		let to_add_right = [];
 
-		let to_add = [];
+		let flex_item_left = document.createElement('div');
+		flex_item_left.id = 'flex_item_left';
+
+		let flex_item_right = document.createElement('div');
+		flex_item_right.id = 'flex_item_right';
 
 		// === file select <input type="file" name="select_file" id="select_image_button">
 		let file_select = document.createElement('input')
 		file_select.id = "select_image_button";
 		file_select.name = "select_file";
 		file_select.type = "file";
-		to_add.push( file_select );
+		to_add_left.push( file_select );
 
 		// === distance_calculator
 		let CHECKED = 2;
@@ -116,7 +122,7 @@ class appClass{
 			distance_calculator_container.appendChild(label);
 			distance_calculator_container.appendChild(br);
 		}
-		to_add.push( distance_calculator_container );
+		to_add_left.push( distance_calculator_container );
 
 		// === current distance slider
 		let slider_container = document.createElement('div');
@@ -134,13 +140,13 @@ class appClass{
 		});
 		slider_container.appendChild(span);
 		slider_container.appendChild(colour_distance_input);
-		to_add.push( slider_container );
+		to_add_left.push( slider_container );
 
 		// === generate list button
 		let generate_list_button = document.createElement('button');
 		generate_list_button.id = 'generate_list_button';
 		generate_list_button.innerText = "Get colours";
-		to_add.push( generate_list_button );
+		to_add_left.push( generate_list_button );
 
 		// === show text list
 		let copy_list_button = document.createElement('button');
@@ -148,7 +154,7 @@ class appClass{
 		copy_list_button.addEventListener('click', (e)=>{
 			this.copyList();
 		});
-		to_add.push(copy_list_button);
+		to_add_left.push(copy_list_button);
 
 		// === highlight closest
 		let highlight_closest_button = document.createElement('button');
@@ -156,11 +162,11 @@ class appClass{
 		highlight_closest_button.addEventListener('click', (e)=>{
 			this.highlightClosest();
 		});
-		to_add.push(highlight_closest_button);
+		to_add_left.push(highlight_closest_button);
 
 		// === add thread interactive dropdown
 		let dropdown_div = this.createAddThreadDropdown();
-		to_add.push(dropdown_div);
+		to_add_right.push(dropdown_div);
 
 		// set ref
 		this.elements.generate_list_button = generate_list_button;
@@ -169,9 +175,16 @@ class appClass{
 		this.elements.colour_distance = colour_distance_input;
 
 		// ==== add to page
-		to_add.forEach((item)=>{
-			this.elements.controls_area.appendChild( item );
+		to_add_left.forEach((item)=>{
+			flex_item_left.appendChild( item );
 		})
+
+		to_add_right.forEach((item)=>{
+			flex_item_right.appendChild( item );
+		})
+
+		this.elements.controls_area.appendChild(flex_item_left);
+		this.elements.controls_area.appendChild(flex_item_right);
 
 
 	}
@@ -344,6 +357,11 @@ class appClass{
             if(a.count < b.count) return +1;
             if(a.count == b.count) return 0;
 		});
+
+		// check if user has set additional colours
+		if(this.searchable_dropdown){
+			this.searchable_dropdown.getactive();
+		}
 
 		// get nearby brand colours	
 		for(let i=0, l=sorted.length; i<l; i++){
