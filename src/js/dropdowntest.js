@@ -32,15 +32,31 @@ class SearchableDropDown{
 		return key_val_data;
 	}
 
-	getactive(){
-
+	getActive(){
+		let collected = [];
 		for(let i=0, l=this.items.length; i<l; i++){
 			let this_div = this.items[i];	
-
 			if(this_div.dataset.active === 'true'){
-				console.log('this_div.dataset', this_div.dataset);
+				let info = this_div.dataset;
+				if(!collected[ `owned_${info.brand}` ]){
+					collected[ `owned_${info.brand}` ] = {};
+				}
+				let pixel = [ parseInt(info.r), parseInt(info.g), parseInt(info.b) ];
+				let hex = helpers.RGB2Hex(pixel);
+					// 	'coolbrand':{
+					// 		'f0c5c1': { 'r': 240, 'g': 197, 'b': 193, 'id': '3713', 'name': false },
+					// 		'e6adab': { 'r': 230, 'g': 173, 'b': 171, 'id': '761', 'name': false }
+					// 	},
+				collected[ `owned_${info.brand}` ][ hex ] = {
+					'r': info.r,
+					'g': info.g,
+					'b': info.b,
+					'id': info.id,
+					'name': info.name === 'false' ? false : info.name
+				};
 			}
 		}
+		return collected;
 
 	}
 

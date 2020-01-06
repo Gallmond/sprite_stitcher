@@ -15,7 +15,11 @@ class floss {
 			brands_to_check = floss.brands;
 		}
 
-		if(additional != false){
+		console.log('additional', additional);
+		console.log('typeof additional', typeof additional);
+		console.log('additional != false', additional != false);
+
+		if(additional){
 			// insert additional floss. format like
 			// {
 			// 	'coolbrand':{
@@ -27,6 +31,7 @@ class floss {
 			// 		'e6adab': { 'r': 230, 'g': 173, 'b': 171, 'id': '761', 'name': false }
 			// 	}
 			// }
+			
 
 			for(let additional_brand_name in additional){
 				// check format of first element

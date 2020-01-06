@@ -359,13 +359,11 @@ class appClass{
 		});
 
 		// check if user has set additional colours
-		if(this.searchable_dropdown){
-			this.searchable_dropdown.getactive();
-		}
+		let owned_floss = this.searchable_dropdown ? this.searchable_dropdown.getActive() : {};
 
 		// get nearby brand colours	
 		for(let i=0, l=sorted.length; i<l; i++){
-			sorted[i]['similar'] = floss.similar( sorted[i].hex, this.elements.colour_distance.value, this.getSelectedColourDistanceMethod() ); 
+			sorted[i]['similar'] = floss.similar( sorted[i].hex, this.elements.colour_distance.value, this.getSelectedColourDistanceMethod(), false, owned_floss ); 
 		}
 
 		// create HTML
