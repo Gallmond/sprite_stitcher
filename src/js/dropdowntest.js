@@ -60,6 +60,74 @@ class SearchableDropDown{
 
 	}
 
+	clearActive(){
+		for(let i=0, l=this.items.length; i<l; i++){
+			let elem = this.items[i];
+			if(elem.dataset.active === 'true'){
+				this.toggleactive(elem);
+			}
+		}
+	}
+	clearActiveInMemory(){
+		if(window.localStorage){
+			window.localStorage.setItem('owned_threads', '{}');
+		}
+		console.log('this', this);
+		this.clearActive();
+	}
+	setActiveInMemory(elem){
+		if(!window.localStorage){
+			return;
+		}
+		let storedthreads = JSON.parse(window.localStorage.getItem('owned_threads'));
+		if(!storedthreads){
+			storedthreads = {};
+		}
+		let pixel = [ parseInt(elem.dataset.r), parseInt(elem.dataset.g), parseInt(elem.dataset.b) ];
+		let hex = helpers.RGB2Hex(pixel);
+		let brand = elem.dataset.brand;
+		let active = elem.dataset.active;
+
+		if(active === 'true'){
+			if(!storedthreads[brand]){
+				storedthreads[brand] = {};
+			}
+			if(!storedthreads[brand][hex]){
+				storedthreads[brand][hex] = true;
+			}
+			window.localStorage.setItem('owned_threads', JSON.stringify(storedthreads));
+		}else{
+			if(storedthreads[brand] != null && storedthreads[brand][hex]!=null){
+				console.log('deleting', storedthreads[brand][hex])
+				delete storedthreads[brand][hex];
+				console.log('deleted', storedthreads[brand][hex])
+				window.localStorage.setItem('owned_threads', JSON.stringify(storedthreads));
+			}
+		}
+	}
+	getActiveInMemory(){
+		if(!window.localStorage){
+			return;
+		}
+		let storedthreads = JSON.parse(window.localStorage.getItem('owned_threads'));
+		if(!storedthreads){
+			storedthreads = {};
+		}
+		for(let i=0, l=this.items.length; i<l; i++){
+			let this_div = this.items[i];
+			let info = this_div.dataset;
+			let pixel = [ parseInt(info.r), parseInt(info.g), parseInt(info.b) ];
+			let hex = helpers.RGB2Hex(pixel);
+			if(info.brand in storedthreads){
+				if(hex in storedthreads[info.brand]){
+					if(info.active!='true'){
+						this.toggleactive(this.items[i]);
+					}
+				}
+			}
+		}
+	}
+
 	toggleactive(elem){
 		elem.dataset.active = elem.dataset.active === 'true' ? 'false' : 'true';
 		if(elem.dataset.active === 'true'){
@@ -67,6 +135,7 @@ class SearchableDropDown{
 		}else{
 			elem.style.backgroundColor = '';
 		}
+		this.setActiveInMemory(elem);
 		if(typeof this.callback === 'function'){
 			this.callback( elem );
 		}
@@ -128,8 +197,17 @@ class SearchableDropDown{
 
 		this.content.appendChild( list_container );
 
+		// clear button
+		this.clear_button = document.createElement('button');
+		this.clear_button.innerText = 'clear stored';
+		this.clear_button.addEventListener('click', ()=>{this.clearActiveInMemory()});
+
 		this.containing_div.appendChild(this.button);
+		this.containing_div.appendChild(this.clear_button);
 		this.containing_div.appendChild(this.content);
+
+ 		this.getActiveInMemory();
+
 	}
 
 }
